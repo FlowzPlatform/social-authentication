@@ -5,7 +5,7 @@ var GitHubStrategy = require('passport-github').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,githubclientid,githubclientsecret,githubcallbackurl } = require('../config/config.js');
+const { secret,githubclientid,githubclientsecret,domainkey } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());

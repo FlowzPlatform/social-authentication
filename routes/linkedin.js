@@ -5,7 +5,7 @@ var LinkedInStrategy = require('passport-linkedin').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,linkedinclientid,linkedinclientsecret,linkedincallbackurl } = require('../config/config.js');
+const { secret,linkedinclientid,linkedinclientsecret,domainkey } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());

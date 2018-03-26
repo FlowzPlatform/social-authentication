@@ -5,7 +5,7 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,twitterclientid,twitterclientsecret,twittercallbackurl } = require('../config/config.js');
+const { secret,twitterclientid,twitterclientsecret,domainkey } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());

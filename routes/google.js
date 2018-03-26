@@ -5,7 +5,7 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,googleclientid,googleclientsecret,googlecallbackurl } = require('../config/config.js');
+const { secret,googleclientid,googleclientsecret,domainkey } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
