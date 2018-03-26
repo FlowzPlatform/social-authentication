@@ -5,7 +5,7 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,googlecallbackurl } = require('../config/config.js');
+const { secret,googleclientid,googleclientsecret,googlecallbackurl } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
@@ -14,8 +14,8 @@ router.use(passport.session());
 // console.log("Strategy",Strategy)
 
 passport.use(new GoogleStrategy({
-      "clientID": "381524561267-3agj2flmlj546qsnufj8d6283e6eismb.apps.googleusercontent.com",
-      "clientSecret": "KFzqxuDKfGnF91QMRHiirZwW",
+      "clientID": googleclientid,
+      "clientSecret": googleclientsecret,
       "scope": [
         "profile openid email"
       ],
@@ -63,7 +63,7 @@ async function jwtToken(id) {
   payload = {
     "userId": id,
     "iat": Math.floor(Date.now() / 1000) - 30,
-    "exp": Math.floor(Date.now() / 1000) + 30 * 30,
+    "exp": Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     "aud": "https://yourdomain.com",
     "iss": "feathers",
     "sub": "anonymous"
@@ -78,7 +78,8 @@ router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/auth/google' }),
 
   async function (req, res) {
-    console.log(" request========================", req)
+    // console.log(" request========================", req)
+     console.log(" request========================", res)
     try {
       // console.log('Referrer set to:', req.session.success_url);
 

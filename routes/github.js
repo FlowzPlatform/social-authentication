@@ -5,7 +5,7 @@ var GitHubStrategy = require('passport-github').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,githubcallbackurl } = require('../config/config.js');
+const { secret,githubclientid,githubclientsecret,githubcallbackurl } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
@@ -14,8 +14,8 @@ router.use(passport.session());
 // console.log("Strategy",Strategy)
 
 passport.use(new GitHubStrategy({
-      "clientID": "a95e5e17ff60e99928ce",
-      "clientSecret": "b4dbe5e7a31baae968a5fdae14e6322553f702e0",
+      "clientID": githubclientid,
+      "clientSecret": githubclientsecret,
       "scope": "user:email",
       "callbackURL": githubcallbackurl
     },
@@ -68,7 +68,7 @@ async function jwtToken(id) {
   payload = {
     "userId": id,
     "iat": Math.floor(Date.now() / 1000) - 30,
-    "exp": Math.floor(Date.now() / 1000) + 30 * 30,
+    "exp": Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     "aud": "https://yourdomain.com",
     "iss": "feathers",
     "sub": "anonymous"

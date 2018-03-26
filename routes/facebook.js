@@ -16,17 +16,16 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,fbcallbackurl} = require('../config/config.js');
+const { secret,fbclientid,fbclientsecret,fbcallbackurl} = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
 router.use(passport.session());
-
 // console.log("Strategy",Strategy)
 
 passport.use(new FacebookStrategy({
-  "clientID": "2111219022430716",
-  "clientSecret": "2d59f6b00c6e34f41b41d1bc5f3d9ccf",
+  "clientID": fbclientid,
+  "clientSecret": fbclientsecret,
   "callbackURL": fbcallbackurl,
   "scope": [
     "public_profile",
@@ -94,7 +93,7 @@ async function jwtToken(id) {
   payload = {
     "userId": id,
     "iat": Math.floor(Date.now() / 1000) - 30,
-    "exp": Math.floor(Date.now() / 1000) + 30 * 30,
+    "exp": Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     "aud": "https://yourdomain.com",
     "iss": "feathers",
     "sub": "anonymous"
@@ -142,6 +141,5 @@ router.get('/auth/facebook/callback',
         res.redirect(req.session.failure_url + '?err=' + "failed to find any email from your facebook account");
     }
   })
-
 
 module.exports = router;

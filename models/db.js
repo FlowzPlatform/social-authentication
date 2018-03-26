@@ -7,37 +7,37 @@ mongoose.Promise = global.Promise;
 // Logger = require('mongodb').Logger;
 // Logger.setLevel('debug');
 
-mongoose.connect("database",{ /* other options */ });
+// mongoose.connect("database",{ /* other options */ });
 
-var options = {
-    db: {
-        native_parser: true,
-        // readPreference: "secondaryPreferred"
-    },
-    server: {
-        socketOptions: {
-            keepAlive: 1,
-        },
-    },
-    mongos: {
-    //   ssl: true,
-      sslValidate: false
-    },
-    replset: {
-        auto_reconnect: false ,
-        connectWithNoPrimary: true,
-        socketOptions: {
-            keepAlive: 1,
-            connectTimeoutMS: 5000,
-        },
-        strategy: 'ping',
-        // read_secondary: true,
-        // readPreference: 'secondaryPreferred',
-        safe: { w: "majority", j: 1, wtimeout: 10000 }
-    }
-}
+// var options = {
+//     db: {
+//         native_parser: true,
+//         // readPreference: "secondaryPreferred"
+//     },
+//     server: {
+//         socketOptions: {
+//             keepAlive: 1,
+//         },
+//     },
+//     mongos: {
+//     //   ssl: true,
+//       sslValidate: false
+//     },
+//     replset: {
+//         auto_reconnect: false ,
+//         connectWithNoPrimary: true,
+//         socketOptions: {
+//             keepAlive: 1,
+//             connectTimeoutMS: 5000,
+//         },
+//         strategy: 'ping',
+//         // read_secondary: true,
+//         // readPreference: 'secondaryPreferred',
+//         safe: { w: "majority", j: 1, wtimeout: 10000 }
+//     }
+// }
 
-mongoose.connect(database, options)
+mongoose.connect(database)
 
 var db = mongoose.connection;
 // console.log("db", db)

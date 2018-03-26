@@ -5,7 +5,7 @@ var LinkedInStrategy = require('passport-linkedin').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,linkedincallbackurl } = require('../config/config.js');
+const { secret,linkedinclientid,linkedinclientsecret,linkedincallbackurl } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
@@ -14,8 +14,8 @@ router.use(passport.session());
 // console.log("Strategy",Strategy)
 
 passport.use(new LinkedInStrategy({
-    "consumerKey": "81kqg14neqpc27",
-    "consumerSecret": "bNKpSeJC5ljWcsvA",
+    "consumerKey": linkedinclientid,
+    "consumerSecret": linkedinclientsecret,
     "callbackURL": linkedincallbackurl,
     "profileFields": ['id', 'first-name', 'last-name', 'email-address', 'headline'],
     "scope": ['r_emailaddress', 'r_basicprofile'],
@@ -62,7 +62,7 @@ async function jwtToken(id) {
   payload = {
     "userId": id,
     "iat": Math.floor(Date.now() / 1000) - 30,
-    "exp": Math.floor(Date.now() / 1000) + 30 * 30,
+    "exp": Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     "aud": "https://yourdomain.com",
     "iss": "feathers",
     "sub": "anonymous"

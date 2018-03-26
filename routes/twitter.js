@@ -5,7 +5,7 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,twittercallbackurl } = require('../config/config.js');
+const { secret,twitterclientid,twitterclientsecret,twittercallbackurl } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
@@ -14,8 +14,8 @@ router.use(passport.session());
 // console.log("Strategy",Strategy)
 
 passport.use(new TwitterStrategy({
-    "consumerKey": "UHRLQnhnIm7Aun8eqtsWQGltS",
-    "consumerSecret": "W2OKLPUPq5v7B90CPnR9mIjDpsjJ2D7y22u9gmBlkLimhrgXyJ",
+    "consumerKey": twitterclientid,
+    "consumerSecret": twitterclientsecret,
     "callbackURL": twittercallbackurl,
     "userProfileURL"  : 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
   },
@@ -61,7 +61,7 @@ async function jwtToken(id) {
   payload = {
     "userId": id,
     "iat": Math.floor(Date.now() / 1000) - 30,
-    "exp": Math.floor(Date.now() / 1000) + 30 * 30,
+    "exp": Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     "aud": "https://yourdomain.com",
     "iss": "feathers",
     "sub": "anonymous"
