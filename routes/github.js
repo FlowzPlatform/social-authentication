@@ -17,7 +17,7 @@ passport.use(new GitHubStrategy({
       "clientID": githubclientid,
       "clientSecret": githubclientsecret,
       "scope": "user:email",
-      "callbackURL": 'https://social.' + domainkey + '/auth/github/callback'
+      "callbackURL": 'http://social.' + domainkey + '/auth/github/callback'
     },
 
   function (accessToken, refreshToken, profile, cb) {

@@ -26,7 +26,7 @@ router.use(passport.session());
 passport.use(new FacebookStrategy({
   "clientID": fbclientid,
   "clientSecret": fbclientsecret,
-  "callbackURL": 'https://social.' + domainkey + '/auth/facebook/callback',
+  "callbackURL": 'http://social.' + domainkey + '/auth/facebook/callback',
   "scope": [
     "public_profile",
     "email"

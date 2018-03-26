@@ -16,7 +16,7 @@ router.use(passport.session());
 passport.use(new LinkedInStrategy({
     "consumerKey": linkedinclientid,
     "consumerSecret": linkedinclientsecret,
-    "callbackURL": 'https://social.' + domainkey + '/auth/linkedin/callback',
+    "callbackURL": 'http://social.' + domainkey + '/auth/linkedin/callback',
     "profileFields": ['id', 'first-name', 'last-name', 'email-address', 'headline'],
     "scope": ['r_emailaddress', 'r_basicprofile'],
   },
