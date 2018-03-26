@@ -16,7 +16,7 @@ router.use(passport.session());
 passport.use(new TwitterStrategy({
     "consumerKey": twitterclientid,
     "consumerSecret": twitterclientsecret,
-    "callbackURL": 'https://auth.' + domainkey + '/auth/twitter/callback',
+    "callbackURL": 'https://social.' + domainkey + '/auth/twitter/callback',
     "userProfileURL"  : 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
   },
 

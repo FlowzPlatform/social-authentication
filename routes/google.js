@@ -19,7 +19,7 @@ passport.use(new GoogleStrategy({
       "scope": [
         "profile openid email"
       ],
-     "callbackURL": 'https://auth.' + domainkey + '/auth/google/callback'
+     "callbackURL": 'https://social.' + domainkey + '/auth/google/callback'
     },
 
   function (accessToken, refreshToken, profile, cb) {
