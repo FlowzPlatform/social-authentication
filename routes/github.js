@@ -54,7 +54,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/auth/github', function (req, res, next) {
+router.get('/auth/newgithub', function (req, res, next) {
   console.log("req.session",req.session)
   console.log("req.query['success_url']", req.query['success_url'])
   console.log("req.query['failure_url']", req.query['failure_url'])
