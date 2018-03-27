@@ -16,7 +16,7 @@ router.use(passport.session());
 passport.use(new TwitterStrategy({
     "consumerKey": twitterclientid,
     "consumerSecret": twitterclientsecret,
-    "callbackURL": 'http://social.' + domainkey + '/auth/twitter/callback',
+    "callbackURL": 'http://auth.' + domainkey + '/auth/twitter/callback',
     "userProfileURL"  : 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
   },
 
@@ -47,7 +47,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/auth/newtwitter', function (req, res, next) {
+router.get('/auth/twitter', function (req, res, next) {
   console.log("req.session",req.session)
   console.log("req.query['success_url']", req.query['success_url'])
   console.log("req.query['failure_url']", req.query['failure_url'])
@@ -88,7 +88,7 @@ router.get('/auth/twitter/callback',
       let provider = req.user.provider
 
 
-      let data_length = await User.find({ social_uid: id });
+      let data_length = await User.find({ email: email });
       let data = data_length[0];
       // console.log("data",data.length)
 
@@ -101,11 +101,14 @@ router.get('/auth/twitter/callback',
         console.log("token:::::::::::", token)
         res.redirect(req.session.success_url + '?token=' + token);
       } else {
+        query = { email: data.email };
+        const update = { $set: { "provider": provider,"social_uid":id, "updated_at": new Date() } };
+        let up = await User.findOneAndUpdate(query, update, { returnNewDocument: true, new: true })
         let token = await jwtToken(data._id)
         res.redirect(req.session.success_url + '?token=' + token);
       }
     } catch (err) {
-         res.redirect(req.session.failure_url + '?err=' + err);
+         res.redirect(req.session.failure_url + '?errcode=401');
     }
   })
 

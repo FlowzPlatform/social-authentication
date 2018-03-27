@@ -17,7 +17,7 @@ passport.use(new GitHubStrategy({
       "clientID": githubclientid,
       "clientSecret": githubclientsecret,
       "scope": "user:email",
-      "callbackURL": 'http://social.' + domainkey + '/auth/github/callback'
+      "callbackURL": 'http://auth.'+ domainkey +'/auth/github/callback'
     },
 
   function (accessToken, refreshToken, profile, cb) {
@@ -54,7 +54,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/auth/newgithub', function (req, res, next) {
+router.get('/auth/github', function (req, res, next) {
   console.log("req.session",req.session)
   console.log("req.query['success_url']", req.query['success_url'])
   console.log("req.query['failure_url']", req.query['failure_url'])
@@ -95,7 +95,7 @@ router.get('/auth/github/callback',
       let provider = req.user.provider
 
 
-      let data_length = await User.find({ social_uid: id });
+      let data_length = await User.find({ email: email });
       let data = data_length[0];
       // console.log("data",data.length)
 
@@ -108,11 +108,15 @@ router.get('/auth/github/callback',
         console.log("token:::::::::::", token)
         res.redirect(req.session.success_url + '?token=' + token);
       } else {
+        console.log("data github",data)
+        query = { email: data.email };
+        const update = { $set: { "provider": provider,"social_uid":id, "updated_at": new Date() } };
+        let up = await User.findOneAndUpdate(query, update, { returnNewDocument: true, new: true })
         let token = await jwtToken(data._id)
         res.redirect(req.session.success_url + '?token=' + token);
       }
     } catch (err) {
-         res.redirect(req.session.failure_url + '?err=' + err);
+         res.redirect(req.session.failure_url + '?errcode=401');
     }
   })
 

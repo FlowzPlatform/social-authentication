@@ -26,7 +26,7 @@ router.use(passport.session());
 passport.use(new FacebookStrategy({
   "clientID": fbclientid,
   "clientSecret": fbclientsecret,
-  "callbackURL": 'http://social.' + domainkey + '/auth/facebook/callback',
+  "callbackURL": 'http://auth.' + domainkey + '/auth/facebook/callback',
   "scope": [
     "public_profile",
     "email"
@@ -79,7 +79,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/auth/newfacebook', function (req, res, next) {
+router.get('/auth/facebook', function (req, res, next) {
   console.log("req.session",req.session)
   console.log("req.query['success_url']", req.query['success_url'])
   console.log("req.query['failure_url']", req.query['failure_url'])
@@ -120,7 +120,7 @@ router.get('/auth/facebook/callback',
       let provider = req.user.provider
 
 
-      let data_length = await User.find({ social_uid: id });
+      let data_length = await User.find({ email: email });
       let data = data_length[0];
       // console.log("data",data.length)
 
@@ -133,12 +133,15 @@ router.get('/auth/facebook/callback',
         console.log("token:::::::::::", token)
         res.redirect(req.session.success_url + '?token=' + token);
       } else {
+        query = { email: data.email };
+        const update = { $set: { "provider": provider,"social_uid":id, "updated_at": new Date() } };
+        let up = await User.findOneAndUpdate(query, update, { returnNewDocument: true, new: true })
         let token = await jwtToken(data._id)
         res.redirect(req.session.success_url + '?token=' + token);
       }
     } catch (err) {
       // console.log("err",err)
-        res.redirect(req.session.failure_url + '?err=' + "failed to find any email from your facebook account");
+        res.redirect(req.session.failure_url + '?errcode=401');
     }
   })
 
