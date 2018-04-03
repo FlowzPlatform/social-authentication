@@ -12,6 +12,8 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 // console.log("Strategy",Strategy)
+console.log("linkedinclientid",linkedinclientid)
+console.log("linkedinclientsecret",linkedinclientsecret)
 
 passport.use(new LinkedInStrategy({
     "consumerKey": linkedinclientid,
@@ -22,6 +24,7 @@ passport.use(new LinkedInStrategy({
   },
 
   function (accessToken, refreshToken, profile, cb) {
+    console.log("profile",profile)
       return cb(null, profile);
   }));
 
@@ -80,7 +83,7 @@ router.get('/auth/linkedin/callback',
     console.log(" request========================", req)
     try {
       // console.log('Referrer set to:', req.session.success_url);
-
+      console.log(" request user", req.user)
       let id = req.user.id
       let fullname = req.user.displayName;
       let firstname = req.user.name.givenName;
