@@ -11,7 +11,6 @@ const { sign, verify, decode } = require('jsonwebtoken');
 router.use(passport.initialize());
 router.use(passport.session());
 
-// console.log("Strategy",Strategy)
 console.log("linkedinclientid",linkedinclientid)
 console.log("linkedinclientsecret",linkedinclientsecret)
 
