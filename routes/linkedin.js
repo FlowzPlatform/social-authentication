@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var LinkedInStrategy = require('passport-linkedin').Strategy;
+var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
@@ -11,15 +11,13 @@ const { sign, verify, decode } = require('jsonwebtoken');
 router.use(passport.initialize());
 router.use(passport.session());
 
-console.log("linkedinclientid",linkedinclientid)
-console.log("linkedinclientsecret",linkedinclientsecret)
-
 passport.use(new LinkedInStrategy({
-    "consumerKey": linkedinclientid,
-    "consumerSecret": linkedinclientsecret,
+    "clientID": linkedinclientid,
+    "clientSecret": linkedinclientsecret,
     "callbackURL": 'https://auth.' + domainkey + '/auth/linkedin/callback',
     "profileFields": ['id', 'first-name', 'last-name', 'email-address', 'headline'],
     "scope": ['r_emailaddress', 'r_basicprofile'],
+    "state": true
   },
 
   function (accessToken, refreshToken, profile, cb) {
@@ -79,7 +77,6 @@ router.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/auth/linkedin' }),
 
   async function (req, res) {
-    console.log(" request========================", req)
     try {
       // console.log('Referrer set to:', req.session.success_url);
       console.log(" request user", req.user)
