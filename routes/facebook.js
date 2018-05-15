@@ -21,7 +21,7 @@ const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
 router.use(passport.session());
-// console.log("Strategy",Strategy)
+
 
 passport.use(new FacebookStrategy({
   "clientID": fbclientid,
