@@ -22,6 +22,10 @@ then
     RANCHER_ACCESSKEY="$RANCHER_ACCESSKEY_MASTER";
     RANCHER_SECRETKEY="$RANCHER_SECRETKEY_MASTER";
     RANCHER_URL="$RANCHER_URL_MASTER";
+    
+    SERVICE_NAME_SOCIAL_AUTH="$SERVICE_NAME_SOCIAL_AUTH_MASTER";
+    BACKEND_HOST="$BACKEND_HOST_MASTER";
+
   }
 elif [ "$TRAVIS_BRANCH" = "develop" ]
 then
@@ -47,6 +51,9 @@ then
       RANCHER_ACCESSKEY="$RANCHER_ACCESSKEY_DEVELOP";
       RANCHER_SECRETKEY="$RANCHER_SECRETKEY_DEVELOP";
       RANCHER_URL="$RANCHER_URL_DEVELOP";
+      
+      SERVICE_NAME_SOCIAL_AUTH="$SERVICE_NAME_SOCIAL_AUTH_DEVELOP";
+      BACKEND_HOST="$BACKEND_HOST_DEVELOP";
     }
 elif [ "$TRAVIS_BRANCH" = "staging" ]
 then
@@ -72,6 +79,9 @@ then
       RANCHER_ACCESSKEY="$RANCHER_ACCESSKEY_STAGING";
       RANCHER_SECRETKEY="$RANCHER_SECRETKEY_STAGING";
       RANCHER_URL="$RANCHER_URL_STAGING";
+      
+      SERVICE_NAME_SOCIAL_AUTH="$SERVICE_NAME_SOCIAL_AUTH_STAGING";
+      BACKEND_HOST="$BACKEND_HOST_STAGING";
     }    
 else
   {
@@ -96,10 +106,13 @@ else
       RANCHER_ACCESSKEY="$RANCHER_ACCESSKEY_QA";
       RANCHER_SECRETKEY="$RANCHER_SECRETKEY_QA";
       RANCHER_URL="$RANCHER_URL_QA";
+      
+      SERVICE_NAME_SOCIAL_AUTH="$SERVICE_NAME_SOCIAL_AUTH_QA";
+      BACKEND_HOST="$BACKEND_HOST_QA";
   }
 fi
 
-SERVICE_ID_SOCIAL_AUTH=`curl -u ""$RANCHER_ACCESSKEY":"$RANCHER_SECRETKEY"" -X GET -H 'Accept: application/json' -H 'Content-Type: application/json' "$RANCHER_URL/v2-beta/projects/$ENV_ID/services?name=auth-social-login" | jq '.data[].id' | tr -d '"'`
+SERVICE_ID_SOCIAL_AUTH=`curl -u ""$RANCHER_ACCESSKEY":"$RANCHER_SECRETKEY"" -X GET -H 'Accept: application/json' -H 'Content-Type: application/json' "$RANCHER_URL/v2-beta/projects/$ENV_ID/services?name=$SERVICE_NAME_SOCIAL_AUTH" | jq '.data[].id' | tr -d '"'`
 echo $SERVICE_ID_SOCIAL_AUTH
 
 curl -u ""$RANCHER_ACCESSKEY":"$RANCHER_SECRETKEY"" \
@@ -107,6 +120,6 @@ curl -u ""$RANCHER_ACCESSKEY":"$RANCHER_SECRETKEY"" \
 -H 'Accept: application/json' \
 -H 'Content-Type: application/json' \
 -d '{
-  "inServiceStrategy":{"launchConfig": {"imageUuid":"docker:'$USERNAME'/social_auth_flowz:'$TAG'","kind": "container","labels":{"io.rancher.container.pull_image": "always","io.rancher.scheduler.affinity:host_label": "machine=cluster-flowz"},"ports": ["3004:3004/tcp"],"environment": {"MONGODB": "'"$MONGODB"'","SECRET": "'"$SECRET"'","DOMAINKEY":"'"$DOMAINKEY"'","fbclientid":"'"$FBCLIENTID"'", "fbclientsecret":"'"$FBCLIENTSECRET"'","googleclientid":"'"$GOOGLECLIENTID"'","googleclientsecret":"'"$GOOGLECLIENTSECRET"'","githubclientid":"'"$GITHUBCLIENTID"'","githubclientsecret":"'"$GITHUBCLIENTSECRET"'","twitterclientid":"'"$TWITTERCLIENTID"'","twitterclientsecret":"'"$TWITTERCLIENTSECRET"'","linkedinclientid":"'"$LINKEDINCLIENTID"'",
+  "inServiceStrategy":{"launchConfig": {"imageUuid":"docker:'$USERNAME'/social_auth_flowz:'$TAG'","kind": "container","labels":{"io.rancher.container.pull_image": "always","io.rancher.scheduler.affinity:host_label": "'"$BACKEND_HOST"'"},"ports": ["3004:3004/tcp"],"environment": {"MONGODB": "'"$MONGODB"'","SECRET": "'"$SECRET"'","DOMAINKEY":"'"$DOMAINKEY"'","fbclientid":"'"$FBCLIENTID"'", "fbclientsecret":"'"$FBCLIENTSECRET"'","googleclientid":"'"$GOOGLECLIENTID"'","googleclientsecret":"'"$GOOGLECLIENTSECRET"'","githubclientid":"'"$GITHUBCLIENTID"'","githubclientsecret":"'"$GITHUBCLIENTSECRET"'","twitterclientid":"'"$TWITTERCLIENTID"'","twitterclientsecret":"'"$TWITTERCLIENTSECRET"'","linkedinclientid":"'"$LINKEDINCLIENTID"'",
       "linkedinclientsecret":"'"$LINKEDINCLIENTSECRET"'"},"healthCheck": {"type": "instanceHealthCheck","healthyThreshold": 2,"initializingTimeout": 60000,"interval": 2000,"name": null,"port": 3004,"recreateOnQuorumStrategyConfig": {"type": "recreateOnQuorumStrategyConfig","quorum": 1},"reinitializingTimeout": 60000,"responseTimeout": 60000,"strategy": "recreateOnQuorum","unhealthyThreshold": 3},"networkMode": "managed"}},"toServiceStrategy":null}' \
 $RANCHER_URL/v2-beta/projects/$ENV_ID/services/$SERVICE_ID_SOCIAL_AUTH?action=upgrade
