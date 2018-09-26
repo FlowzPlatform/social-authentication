@@ -5,7 +5,7 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var querystring = require('querystring');
 const User = require('../models/user.js');
 const db = require('../models/db');
-const { secret,googleclientid,googleclientsecret,domainkey } = require('../config/config.js');
+const { secret, googleclientid, googleclientsecret, domainkey } = require('../config/config.js');
 const { sign, verify, decode } = require('jsonwebtoken');
 
 router.use(passport.initialize());
@@ -14,16 +14,16 @@ router.use(passport.session());
 // console.log("Strategy",Strategy)
 
 passport.use(new GoogleStrategy({
-      "clientID": googleclientid,
-      "clientSecret": googleclientsecret,
-      "scope": [
-        "profile openid email"
-      ],
-     "callbackURL": 'http://social.' + domainkey + '/auth/google/callback'
-    },
+  "clientID": googleclientid,
+  "clientSecret": googleclientsecret,
+  "scope": [
+    "profile openid email"
+  ],
+  "callbackURL": 'https://auth.' + domainkey + '/auth/google/callback'
+},
 
   function (accessToken, refreshToken, profile, cb) {
-      return cb(null, profile);
+    return cb(null, profile);
   }));
 
 
@@ -44,20 +44,20 @@ passport.deserializeUser(function (obj, cb) {
   cb(null, obj);
 });
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
 /* GET home page. */
-router.get('/auth/newgoogle', function (req, res, next) {
-  console.log("req.session",req.session)
+router.get('/auth/google', function (req, res, next) {
+  console.log("req.session", req.session)
   console.log("req.query['success_url']", req.query['success_url'])
   console.log("req.query['failure_url']", req.query['failure_url'])
   req.session.success_url = req.query['success_url'];
   req.session.failure_url = req.query['failure_url'];
   next()
 },
-passport.authenticate('google'));
+  passport.authenticate('google'));
 
 async function jwtToken(id) {
   payload = {
@@ -79,7 +79,7 @@ router.get('/auth/google/callback',
 
   async function (req, res) {
     // console.log(" request========================", req)
-     console.log(" request========================", res)
+    console.log(" request========================", res)
     try {
       // console.log('Referrer set to:', req.session.success_url);
 
@@ -91,7 +91,7 @@ router.get('/auth/google/callback',
       let provider = req.user.provider
 
 
-      let data_length = await User.find({ social_uid: id });
+      let data_length = await User.find({ email: email });
       let data = data_length[0];
       // console.log("data",data.length)
 
@@ -104,11 +104,15 @@ router.get('/auth/google/callback',
         console.log("token:::::::::::", token)
         res.redirect(req.session.success_url + '?token=' + token);
       } else {
+        console.log("data",data)
+        query = { email: data.email };
+        const update = { $set: { "provider": provider,"social_uid":id, "updated_at": new Date() } };
+        let up = await User.findOneAndUpdate(query, update, { returnNewDocument: true, new: true })
         let token = await jwtToken(data._id)
         res.redirect(req.session.success_url + '?token=' + token);
       }
     } catch (err) {
-        res.redirect(req.session.failure_url + '?err=' + err);
+      res.redirect(req.session.failure_url + '?errcode=401');
     }
   })
 
